@@ -1,0 +1,27 @@
+{
+	"name": "BookingDataTransformation",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "BookingDataCosmos",
+						"type": "DatasetReference"
+					},
+					"name": "BookingData",
+					"description": "Import data from BookingDataCosmos"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     enableChangeFeed: true,",
+				"     changeFeedStartFromTheBeginning: false,",
+				"     format: 'document') ~> BookingData"
+			]
+		}
+	}
+}
