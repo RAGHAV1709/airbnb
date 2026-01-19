@@ -1,0 +1,9 @@
+{
+	"name": "airbnbprojectraghav",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "09ede68e-2fd9-445a-a886-fa227fb36863",
+		"tenantId": "8e3203ef-92cb-4584-a83d-42e6efabadfb"
+	}
+}
