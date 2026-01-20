@@ -79,19 +79,51 @@
 										"type": "DelimitedTextReadSettings"
 									}
 								},
-								"enableStaging": false
+								"sink": {
+									"type": "SqlDWSink",
+									"writeBehavior": "Upsert",
+									"upsertSettings": {
+										"keys": [
+											"customer_id"
+										],
+										"interimSchemaName": ""
+									},
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
 							},
 							"inputs": [
 								{
 									"referenceName": "CustomerDataRaw",
 									"type": "DatasetReference"
 								}
+							],
+							"outputs": [
+								{
+									"referenceName": "CustomerDataSynapse",
+									"type": "DatasetReference"
+								}
 							]
 						},
 						{
-							"name": "Copy data2",
+							"name": "CopyToArchive",
 							"type": "Copy",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "UpsertInSynapse",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -101,7 +133,90 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"enableStaging": false
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"wildcardFolderPath": "customer_raw_data",
+										"wildcardFileName": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".csv"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "CustomerDataRaw",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "CustomerDataArchive",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "DeleteSourceFile",
+							"type": "Delete",
+							"dependsOn": [
+								{
+									"activity": "CopyToArchive",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "CustomerDataRaw",
+									"type": "DatasetReference"
+								},
+								"enableLogging": false,
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": {
+										"value": "@item().name",
+										"type": "Expression"
+									},
+									"enablePartitionDiscovery": false
+								}
 							}
 						}
 					]
