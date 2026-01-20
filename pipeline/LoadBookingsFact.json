@@ -1,44 +1,59 @@
 {
-	"name": "pipeline1",
+	"name": "LoadBookingsFact",
 	"properties": {
 		"activities": [
 			{
-				"name": "DimLoad",
-				"type": "ExecutePipeline",
+				"name": "Dataflow",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
 					"secureInput": false
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pipeline": {
-						"referenceName": "LoadCustomerDim",
-						"type": "PipelineReference"
+					"dataflow": {
+						"referenceName": "BookingDataTransformation",
+						"type": "DataFlowReference"
 					},
-					"waitOnCompletion": true
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"continuationSettings": {
+						"customizedCheckpointKey": "eb8a206e-39c6-4487-8f59-8962ac1b4ddb"
+					}
 				}
 			},
 			{
-				"name": "FactLoad",
-				"type": "ExecutePipeline",
+				"name": "TriggerStoredProcedure",
+				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "DimLoad",
+						"activity": "Dataflow",
 						"dependencyConditions": [
 							"Completed"
 						]
 					}
 				],
 				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
 					"secureInput": false
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pipeline": {
-						"referenceName": "LoadBookingsFact",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
+					"storedProcedureName": "[airbnb].[BookingAggregation]"
+				},
+				"linkedServiceName": {
+					"referenceName": "SynapseDWH",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
