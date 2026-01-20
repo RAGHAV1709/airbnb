@@ -9,28 +9,43 @@
 		"type": "AzureSqlDWTable",
 		"schema": [
 			{
+				"name": "booking_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "property_id",
+				"type": "nvarchar"
+			},
+			{
 				"name": "customer_id",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "first_name",
+				"name": "owner_id",
 				"type": "nvarchar"
 			},
 			{
-				"name": "last_name",
-				"type": "nvarchar"
+				"name": "check_in_date",
+				"type": "date"
 			},
 			{
-				"name": "email",
-				"type": "nvarchar"
+				"name": "check_out_date",
+				"type": "date"
 			},
 			{
-				"name": "phone_number",
-				"type": "nvarchar"
+				"name": "booking_date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			},
 			{
-				"name": "address",
+				"name": "amount",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "currency",
 				"type": "nvarchar"
 			},
 			{
@@ -38,54 +53,38 @@
 				"type": "nvarchar"
 			},
 			{
-				"name": "state",
-				"type": "nvarchar"
-			},
-			{
 				"name": "country",
 				"type": "nvarchar"
 			},
 			{
-				"name": "zip_code",
+				"name": "full_address",
 				"type": "nvarchar"
 			},
 			{
-				"name": "signup_date",
-				"type": "date"
+				"name": "stay_duration",
+				"type": "bigint",
+				"precision": 19
 			},
 			{
-				"name": "last_login",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
-			},
-			{
-				"name": "total_bookings",
+				"name": "booking_year",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "total_spent",
-				"type": "decimal",
-				"precision": 10,
-				"scale": 2
+				"name": "booking_month",
+				"type": "int",
+				"precision": 10
 			},
 			{
-				"name": "preferred_language",
-				"type": "nvarchar"
-			},
-			{
-				"name": "referral_code",
-				"type": "nvarchar"
-			},
-			{
-				"name": "account_status",
-				"type": "nvarchar"
+				"name": "timestamp",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
 			}
 		],
 		"typeProperties": {
 			"schema": "airbnb",
-			"table": "customer_dim"
+			"table": "bookings_fact"
 		}
 	}
 }
