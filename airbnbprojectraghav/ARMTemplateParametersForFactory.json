@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "airbnbprojectraghav"
+		},
+		"CosmosDBNew_connectionString": {
+			"value": ""
+		},
+		"AirBnBADLS_properties_typeProperties_url": {
+			"value": "https://airbnbdataraghav.dfs.core.windows.net/"
+		},
+		"SynapseDWH_properties_typeProperties_server": {
+			"value": "synapsegdsraghav1.sql.azuresynapse.net"
+		},
+		"SynapseDWH_properties_typeProperties_database": {
+			"value": "airbnb_dwh"
+		}
+	}
+}
