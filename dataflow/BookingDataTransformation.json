@@ -14,13 +14,60 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "DataQualityCheck"
+				},
+				{
+					"name": "DerivedColumns"
+				},
+				{
+					"name": "LookupInSynapse"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          booking_id as string,",
+				"          property_id as string,",
+				"          customer_id as integer,",
+				"          owner_id as string,",
+				"          check_in_date as string,",
+				"          check_out_date as string,",
+				"          booking_date as string,",
+				"          amount as double,",
+				"          currency as string,",
+				"          property_location as (city as string, country as string),",
+				"          timestamp as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     enableChangeFeed: true,",
 				"     changeFeedStartFromTheBeginning: false,",
-				"     format: 'document') ~> BookingData"
+				"     format: 'document') ~> BookingData",
+				"BookingData split(check_out_date<check_in_date,",
+				"     disjoint: false) ~> DataQualityCheck@(BadRecords, AcceptedRecords)",
+				"DataQualityCheck@AcceptedRecords derive(stay_duration = (toTimestamp(check_out_date) - toTimestamp(check_in_date)) / 86400000,",
+				"          booking_year = year(toTimestamp(booking_date, 'yyyy-MM-dd HH:mm:ss')),",
+				"          booking_month = month(toTimestamp(booking_date)),",
+				"          full_address = concat(property_location.city, ', ', property_location.country)\r",
+				",",
+				"          city = property_location.city,",
+				"          country = property_location.country,",
+				"          booking_id = booking_id,",
+				"          property_id = property_id,",
+				"          customer_id = customer_id,",
+				"          owner_id = owner_id,",
+				"          check_in_date = check_in_date,",
+				"          check_out_date = check_out_date,",
+				"          booking_date = booking_date,",
+				"          amount = amount,",
+				"          currency = currency,",
+				"          property_location = property_location,",
+				"          timestamp = timestamp) ~> DerivedColumns",
+				"DerivedColumns lookup(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupInSynapse"
 			]
 		}
 	}
