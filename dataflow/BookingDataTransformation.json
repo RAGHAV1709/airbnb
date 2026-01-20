@@ -23,7 +23,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "CustomerDataSynapse",
+						"referenceName": "BookingsFactDataSynapse",
 						"type": "DatasetReference"
 					},
 					"name": "SynapseFactWrite",
