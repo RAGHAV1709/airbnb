@@ -30,6 +30,10 @@
 				},
 				{
 					"name": "LookupInSynapse"
+				},
+				{
+					"name": "AlterRowForUpdate",
+					"description": "Inserting, updating, deleting, and/or upserting using expressions on columns 'SynapseForLookup@booking_id'"
 				}
 			],
 			"scriptLines": [
@@ -98,7 +102,9 @@
 				"     multiple: false,",
 				"     pickup: 'first',",
 				"     desc(SynapseForLookup@timestamp, true),",
-				"     broadcast: 'auto')~> LookupInSynapse"
+				"     broadcast: 'auto')~> LookupInSynapse",
+				"LookupInSynapse alterRow(insertIf(isNull(SynapseForLookup@booking_id)),",
+				"     updateIf(not(isNull(SynapseForLookup@booking_id)))) ~> AlterRowForUpdate"
 			]
 		}
 	}
